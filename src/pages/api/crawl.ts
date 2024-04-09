@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // page 1~20까지 반복 후 데이터 합쳐서 반환
     const result: CrawlData[] = [];
 
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 2; i++) {
       const {data} = await axios.get(targetUrl + `&page=${i}`);
       const $ = cheerio.load(data);
       $('div.list-item').each((index, element) => {
@@ -32,13 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const currentText = $(element).find('.contents > span:nth-of-type(1)').text().trim();
         const current = parseInt(currentText.match(regex)?.[0] || '0');
 
-        const deadlineString = $(element).find('.label-cap_front').text().trim()
-        const deadline =
         result.push({
           title: $(element).find('h2 > span:nth-of-type(2)').text().trim(),
           link: $(element).find('.img-item > a').attr('href') || '',
           imageUrl: $(element).find('.img-item img').attr('src') || '',
-          deadline: $(element).find('.label-cap_front').text().trim(),
+          deadline: $(element).find('.list-details').last().find('span.pull-right > span').text().trim(),
           total: total,
           current: current,
         })

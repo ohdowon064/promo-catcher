@@ -40,7 +40,7 @@ const CrawlTable = () => {
         </thead>
         <tbody>
         {data.map((item, index) => (
-          <tr key={index}>
+          <tr key={index} style={{textAlign: "center", backgroundColor: item.deadline === "마감" ? "lightgrey" : "inherit"}}>
             <td onClick={()=>window.open(item.link, '_blank')} style={{cursor: 'pointer'}}>{item.title}</td>
             <td><img src={item.imageUrl} alt="Company Logo" style={{width: '100px'}}/></td>
             <td>{item.deadline}</td>
