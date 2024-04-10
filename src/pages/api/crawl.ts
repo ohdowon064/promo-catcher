@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as cheerio from 'cheerio'
 import {NextApiRequest, NextApiResponse} from "next";
 
-interface CrawlData {
+export interface CrawlRawData {
   title: string;
   link: string;
   imageUrl: string;
@@ -16,12 +16,12 @@ interface Error {
   error: string | null;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<CrawlData[] | Error>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<CrawlRawData[] | Error>) {
   const targetUrl = 'https://www.tojobcn.com/bbs/board.php?bo_table=blog_go&sca=%EC%84%9C%EC%9A%B8';
   const regex = /(\d+)/;
   try {
     // page 1~20까지 반복 후 데이터 합쳐서 반환
-    const result: CrawlData[] = [];
+    const result: CrawlRawData[] = [];
 
     for (let i = 1; i <= 2; i++) {
       const {data} = await axios.get(targetUrl + `&page=${i}`);
