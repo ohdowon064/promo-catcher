@@ -11,7 +11,7 @@ interface CrawlData {
   total: number;
   current: number;
   remaining: number;
-  competitionRate: string;
+  competitionRate: number;
 }
 
 const CrawlTable = () => {
@@ -23,7 +23,18 @@ const CrawlTable = () => {
     const fetchData = async () => {
       const response = await fetch('/api/crawl');
       const jsonData: CrawlRawData[] = await response.json();
-      setData(jsonData.map(item => ({...item, deadline: parseDeadline(item.deadline), remaining: item.total - item.current, competitionRate: (item.current / item.total).toFixed(2)})));
+      const parsedData = jsonData.map(item => ({...item, deadline: parseDeadline(item.deadline), remaining: item.total - item.current, competitionRate: parseFloat((item.current / item.total).toFixed(2))}))
+      const sortedData = parsedData.slice().sort((a, b) => {
+        // 1. deadline 오름차순, 단 -1은 가장 뒤로 설정
+        if (a.deadline === -1) return 1; // a가 -1인 경우 가장 뒤로 이동
+        if (b.deadline === -1) return -1; // b가 -1인 경우 a보다 앞으로 이동
+        if (a.deadline !== b.deadline) return a.deadline - b.deadline; // deadline이 낮은 순서대로 정렬
+
+        // 2. 경쟁률 오름차순
+        // 경쟁률 오름차순으로 정렬하려면 아래 주석을 해제하세요.
+        return a.competitionRate - b.competitionRate;
+      });
+      setData(sortedData);
     };
 
     fetchData();
@@ -38,19 +49,6 @@ const CrawlTable = () => {
       return -1;
     }
   }
-
-  const handleSort = (key: keyof CrawlData) => {
-    setSortBy(key);
-    const sorted = [...filteredData].sort((a, b) => {
-      if (key === 'deadline') {
-        // 마감 날짜의 경우 특별한 처리
-        if (a[key] === '마감') return 1;
-        if (b[key] === '마감') return -1;
-      }
-      return a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
-    });
-    setFilteredData(sorted);
-  };
 
   const getDeadlineDate = (deadline: number) => {
     const today = new Date();
