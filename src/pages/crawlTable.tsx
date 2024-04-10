@@ -19,6 +19,13 @@ const CrawlTable = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const cachedData = localStorage.getItem('crawlData');
+    if (cachedData) {
+      setData(JSON.parse(cachedData));
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       const response = await fetch('/api/crawl');
       const jsonData: CrawlRawData[] = await response.json();
@@ -35,6 +42,11 @@ const CrawlTable = () => {
       });
       setData(sortedData);
       setLoading(false);
+
+      localStorage.setItem('crawlData', JSON.stringify(sortedData));
+      setTimeout(() => {
+        localStorage.removeItem('crawlData');
+      }, 5 * 60 * 1000);
     };
 
     fetchData();
