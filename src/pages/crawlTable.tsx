@@ -17,6 +17,7 @@ interface CrawlData {
 const CrawlTable = () => {
   const [data, setData] = useState<CrawlData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
   const cacheTimeSeconds = parseInt(process.env.CACHE_TIME_SECONDS || '0', 10) || 300;
   const maxPage = parseInt(process.env.MAX_PAGE || '0', 10) || 10;
 
@@ -31,6 +32,7 @@ const CrawlTable = () => {
     const fetchData = async () => {
       const parsedData: CrawlData[] = [];
       for(let i = 1; i < maxPage + 1; i++) {
+        setPage(i);
         const response = await fetch(`/api/crawl?page=${i}`);
         const jsonData: CrawlRawData[] = await response.json();
         jsonData.forEach(item => {
@@ -95,7 +97,7 @@ const CrawlTable = () => {
   }
 
   if (loading) {
-    return <h1>데이터를 가져오는 중입니다...</h1>;
+    return <h1>{page}페이지 데이터를 가져오는 중입니다...</h1>;
   }
 
 
