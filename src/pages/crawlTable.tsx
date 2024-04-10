@@ -16,8 +16,7 @@ interface CrawlData {
 
 const CrawlTable = () => {
   const [data, setData] = useState<CrawlData[]>([]);
-  const [filteredData, setFilteredData] = useState<CrawlData[]>([]);
-  const [sortBy, setSortBy] = useState<string>(''); // 추가: 정렬 기준
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +34,7 @@ const CrawlTable = () => {
         return a.competitionRate - b.competitionRate;
       });
       setData(sortedData);
+      setLoading(false);
     };
 
     fetchData();
@@ -70,6 +70,10 @@ const CrawlTable = () => {
     return `${year}.${month}.${day}(${dayOfWeek})`;
   }
 
+  if (loading) {
+    return <h1>데이터를 가져오는 중입니다...</h1>;
+  }
+
 
   return (
     <div>
@@ -103,6 +107,8 @@ const CrawlTable = () => {
                   top: -50%; /* 원본 이미지 아래에 배치됩니다 */
                   left: 50%; /* 가운데 정렬을 위해 왼쪽을 50%로 설정합니다 */
                   transform: translateX(-50%); /* 가운데 정렬을 위해 X축으로 -50%만큼 이동합니다 */
+                  max-width: 500px;
+                  height: auto;
                   z-index: 2; /* 원본 이미지보다 위에 표시됩니다 */
               }
               td:hover .zoomed-image {
@@ -119,7 +125,6 @@ const CrawlTable = () => {
           <th>Image</th>
           <th>마감 날짜</th>
           <th>모집 인원</th>
-          <th>지원자</th>
           <th>남은 인원</th>
           <th>경쟁률</th>
         </tr>
@@ -140,8 +145,7 @@ const CrawlTable = () => {
             </td>
             <td>{item.deadline > 0 ? `D-${item.deadline}` : item.deadline === 0 ? '오늘 마감' : '마감'}<br></br>{getDeadlineDate(item.deadline)}
             </td>
-            <td>{item.total}</td>
-            <td>{item.current}</td>
+            <td>{item.current}/{item.total}</td>
             <td>{item.remaining}</td>
             <td className="competition-rate">{item.competitionRate} : 1</td>
           </tr>
