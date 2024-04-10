@@ -131,7 +131,7 @@ const CrawlTable = () => {
                 textAlign: "center",
                 backgroundColor: item.deadline === -1 ? "lightgrey" : item.deadline === 0 ? "lightcyan" : 'inherit'
               }}>
-            <td>
+            <td style={{whiteSpace: 'nowrap'}}>
               <a href={item.link} target="_blank" rel="noopener noreferrer" style={{textDecoration: "none"}}>{item.title}</a>
             </td>
             <td>
