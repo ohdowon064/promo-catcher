@@ -91,11 +91,22 @@ const CrawlTable = () => {
                 text-align: center;
                 border: 1px solid black;
             }
-            td img {
-                max-width: 100px; /* 이미지의 최대 너비를 지정합니다 */
-                height: auto;
+            td {
+                position: relative; /* 이미지와 확대된 이미지를 포지셔닝하기 위해 상대 위치 설정합니다 */
             }
-
+             .thumbnail {
+                  max-width: 100%; /* 이미지의 최대 너비를 지정합니다 */
+                  height: auto;
+                  transition: transform 0.3s ease; /* 변환 효과를 추가하여 부드러운 확대 효과를 만듭니다 */
+              }
+              .zoomed-image {
+                  display: none; /* 확대된 이미지는 초기에는 숨겨둡니다 */
+                  position: absolute; /* 부모 요소를 기준으로 절대 위치로 설정합니다 */
+                  top: -50%; /* 원본 이미지 아래에 배치됩니다 */
+                  left: 50%; /* 가운데 정렬을 위해 왼쪽을 50%로 설정합니다 */
+                  transform: translateX(-50%); /* 가운데 정렬을 위해 X축으로 -50%만큼 이동합니다 */
+                  z-index: 2; /* 원본 이미지보다 위에 표시됩니다 */
+              }
               td:hover .zoomed-image {
                   display: block; /* 이미지 위에 호버할 때 확대된 이미지가 표시됩니다 */
               }
@@ -125,7 +136,10 @@ const CrawlTable = () => {
             <td>
               <a href={item.link} target="_blank" rel="noopener noreferrer" style={{textDecoration: "none"}}>{item.title}</a>
             </td>
-            <td><img src={item.imageUrl} alt="Company Logo" style={{width: '100px'}}/></td>
+            <td>
+              <img src={item.imageUrl} alt="Company Logo" className='thumbnail' style={{maxWidth: '150px', height: 'auto'}}/>
+              <img src={item.imageUrl} alt="Company Logo" className='zoomed-image'/>
+            </td>
             <td>{item.deadline > 0 ? `D-${item.deadline}` : item.deadline === 0 ? '오늘 마감' : '마감'}<br></br>{getDeadlineDate(item.deadline)}
             </td>
             <td>{item.total}</td>
