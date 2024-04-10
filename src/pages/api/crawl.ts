@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // page 1~20까지 반복 후 데이터 합쳐서 반환
     const result: CrawlRawData[] = [];
 
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= 20; i++) {
       const {data} = await axios.get(targetUrl + `&page=${i}`);
       const $ = cheerio.load(data);
       $('div.list-item').each((index, element) => {
