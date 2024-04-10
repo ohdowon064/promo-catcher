@@ -74,7 +74,7 @@ const CrawlTable = () => {
   return (
     <div>
       <h2>Crawled Data Table</h2>
-      <table style={{width: '100%', borderCollapse: 'collapse'}} border={1}>
+      <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '20px'}} border={1}>
         <style>
           {`
             thead {
