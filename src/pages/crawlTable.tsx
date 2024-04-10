@@ -11,6 +11,7 @@ interface CrawlData {
   total: number;
   current: number;
   remaining: number;
+  competitionRate: string;
 }
 
 const CrawlTable = () => {
@@ -22,8 +23,7 @@ const CrawlTable = () => {
     const fetchData = async () => {
       const response = await fetch('/api/crawl');
       const jsonData: CrawlRawData[] = await response.json();
-      setData(jsonData.map(item => ({...item, deadline: parseDeadline(item.deadline), remaining: item.total - item.current})));
-      setFilteredData(jsonData.map(item => ({...item, deadline: parseDeadline(item.deadline), remaining: item.total - item.current}))); // 필터링 데이터 초기화
+      setData(jsonData.map(item => ({...item, deadline: parseDeadline(item.deadline), remaining: item.total - item.current, competitionRate: (item.current / item.total).toFixed(2)})));
     };
 
     fetchData();
@@ -76,7 +76,7 @@ const CrawlTable = () => {
   return (
     <div>
       <h2>Crawled Data Table</h2>
-      <table border={1}>
+      <table style={{width: '100%', borderCollapse: 'collapse'}} border={1}>
         <style>
           {`
             thead {
@@ -84,7 +84,23 @@ const CrawlTable = () => {
                 top: 0;
                 background-color: white;
                 z-index: 1;
-                height: 40px;
+                height: 50px; /* 헤더의 높이를 늘립니다 */
+            }
+            th, td {
+                padding: 10px; /* 셀의 패딩을 조정합니다 */
+                text-align: center;
+                border: 1px solid black;
+            }
+            td img {
+                max-width: 100px; /* 이미지의 최대 너비를 지정합니다 */
+                height: auto;
+            }
+
+              td:hover .zoomed-image {
+                  display: block; /* 이미지 위에 호버할 때 확대된 이미지가 표시됩니다 */
+              }
+            .competition-rate {
+                width: 100px; /* 경쟁률 열의 너비를 조정합니다 */
             }
           `}
         </style>
@@ -96,18 +112,26 @@ const CrawlTable = () => {
           <th>모집 인원</th>
           <th>지원자</th>
           <th>남은 인원</th>
+          <th>경쟁률</th>
         </tr>
         </thead>
         <tbody>
         {data.map((item, index) => (
           <tr key={index}
-              style={{textAlign: "center", backgroundColor: item.deadline === -1 ? "lightgrey" : item.deadline === 0 ? "lightcyan": 'inherit'}}>
-            <td onClick={() => window.open(item.link, '_blank')} style={{cursor: 'pointer'}}>{item.title}</td>
+              style={{
+                textAlign: "center",
+                backgroundColor: item.deadline === -1 ? "lightgrey" : item.deadline === 0 ? "lightcyan" : 'inherit'
+              }}>
+            <td>
+              <a href={item.link} target="_blank" rel="noopener noreferrer" style={{textDecoration: "none"}}>{item.title}</a>
+            </td>
             <td><img src={item.imageUrl} alt="Company Logo" style={{width: '100px'}}/></td>
-            <td>{item.deadline > 0? `D-${item.deadline}`: item.deadline === 0 ? '오늘 마감' : '마감'}<br></br>{getDeadlineDate(item.deadline)}</td>
+            <td>{item.deadline > 0 ? `D-${item.deadline}` : item.deadline === 0 ? '오늘 마감' : '마감'}<br></br>{getDeadlineDate(item.deadline)}
+            </td>
             <td>{item.total}</td>
             <td>{item.current}</td>
             <td>{item.remaining}</td>
+            <td className="competition-rate">{item.competitionRate} : 1</td>
           </tr>
         ))}
         </tbody>
