@@ -17,6 +17,7 @@ interface CrawlData {
 const CrawlTable = () => {
   const [data, setData] = useState<CrawlData[]>([]);
   const [loading, setLoading] = useState(true);
+  const cacheTimeSeconds = parseInt(process.env.CACHE_TIME_SECONDS || '300', 10);
 
   useEffect(() => {
     const cachedData = localStorage.getItem('crawlData');
@@ -46,7 +47,7 @@ const CrawlTable = () => {
       localStorage.setItem('crawlData', JSON.stringify(sortedData));
       setTimeout(() => {
         localStorage.removeItem('crawlData');
-      }, 5 * 60 * 1000);
+      }, cacheTimeSeconds * 1000);
     };
 
     fetchData();
