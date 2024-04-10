@@ -17,8 +17,8 @@ interface CrawlData {
 const CrawlTable = () => {
   const [data, setData] = useState<CrawlData[]>([]);
   const [loading, setLoading] = useState(true);
-  const cacheTimeSeconds = parseInt(process.env.CACHE_TIME_SECONDS || '300', 10);
-  const maxPage = parseInt(process.env.MAX_PAGE || '10', 10);
+  const cacheTimeSeconds = parseInt(process.env.CACHE_TIME_SECONDS || '0', 10) || 300;
+  const maxPage = parseInt(process.env.MAX_PAGE || '0', 10) || 10;
 
   useEffect(() => {
     const cachedData = localStorage.getItem('crawlData');
