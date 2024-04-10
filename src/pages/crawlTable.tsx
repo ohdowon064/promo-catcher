@@ -77,6 +77,17 @@ const CrawlTable = () => {
     <div>
       <h2>Crawled Data Table</h2>
       <table border={1}>
+        <style>
+          {`
+            thead {
+                position: sticky;
+                top: 0;
+                background-color: white;
+                z-index: 1;
+                height: 40px;
+            }
+          `}
+        </style>
         <thead>
         <tr>
           <th>Title</th>
