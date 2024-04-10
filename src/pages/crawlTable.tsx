@@ -18,6 +18,7 @@ const CrawlTable = () => {
   const [data, setData] = useState<CrawlData[]>([]);
   const [loading, setLoading] = useState(true);
   const cacheTimeSeconds = parseInt(process.env.CACHE_TIME_SECONDS || '300', 10);
+  const maxPage = parseInt(process.env.MAX_PAGE || '10', 10);
 
   useEffect(() => {
     const cachedData = localStorage.getItem('crawlData');
@@ -28,9 +29,19 @@ const CrawlTable = () => {
     }
 
     const fetchData = async () => {
-      const response = await fetch('/api/crawl');
-      const jsonData: CrawlRawData[] = await response.json();
-      const parsedData = jsonData.map(item => ({...item, deadline: parseDeadline(item.deadline), remaining: item.total - item.current, competitionRate: parseFloat((item.current / item.total).toFixed(2))}))
+      const parsedData: CrawlData[] = [];
+      for(let i = 1; i < maxPage + 1; i++) {
+        const response = await fetch(`/api/crawl?page=${i}`);
+        const jsonData: CrawlRawData[] = await response.json();
+        jsonData.forEach(item => {
+          parsedData.push({
+            ...item,
+            deadline: parseDeadline(item.deadline),
+            remaining: item.total - item.current,
+            competitionRate: parseFloat((item.current / item.total).toFixed(2))
+          })
+        })
+      }
       const sortedData = parsedData.slice().sort((a, b) => {
         // 1. deadline 오름차순, 단 -1은 가장 뒤로 설정
         if (a.deadline === -1) return 1; // a가 -1인 경우 가장 뒤로 이동
